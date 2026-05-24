@@ -1,17 +1,7 @@
 <template>
   <div class="palette-matcher card">
     <h3>色盘匹配</h3>
-    <p class="desc">选择拼豆品牌，系统将自动匹配颜色</p>
-
-    <!-- 品牌选择 -->
-    <div class="brand-select">
-      <label>拼豆品牌</label>
-      <select :value="store.selectedBrand" @change="onBrandChange">
-        <option value="perler">Perler (50色)</option>
-        <option value="artkal">Artkal (50色)</option>
-        <option value="hama">Hama (50色)</option>
-      </select>
-    </div>
+    <p class="desc">系统将自动将像素颜色匹配至264色色盘</p>
 
     <!-- 预览 -->
     <div v-if="store.pixelatedPreview" class="preview-section">
@@ -44,7 +34,10 @@
         ></canvas>
       </div>
       <div v-if="selectedPixel" class="color-picker-panel">
-        <p>选择替换颜色 (当前位置: {{ selectedPixel.x }}, {{ selectedPixel.y }})：</p>
+        <p>
+          选择替换颜色 (当前位置: {{ selectedPixel.x }},
+          {{ selectedPixel.y }})：
+        </p>
         <div class="color-swatch-grid">
           <div
             v-for="color in palette"
@@ -63,7 +56,7 @@
 
     <button
       class="btn btn-primary btn-lg"
-      style="width:100%; margin-top:16px"
+      style="width: 100%; margin-top: 16px"
       @click="$emit('match')"
       :disabled="store.isProcessing"
     >
@@ -74,117 +67,133 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import { useProjectStore } from '@/stores/project'
-import { getPaletteColors } from '@/data/palettes'
-import type { PaletteColor } from '@/types'
+import { ref, computed, watch, nextTick } from 'vue';
+import { useProjectStore } from '@/stores/project';
+import { getPaletteColors } from '@/data/palettes';
+import type { PaletteColor } from '@/types';
 
-defineEmits<{ (e: 'match'): void }>()
+defineEmits<{ (e: 'match'): void }>();
 
-const store = useProjectStore()
-const adjustCanvas = ref<HTMLCanvasElement>()
-const matchCanvas = ref<HTMLCanvasElement>()
-const selectedPixel = ref<{ x: number; y: number } | null>(null)
-const selectedBeadCode = ref('')
+const store = useProjectStore();
+const adjustCanvas = ref<HTMLCanvasElement>();
+const matchCanvas = ref<HTMLCanvasElement>();
+const selectedPixel = ref<{ x: number; y: number } | null>(null);
+const selectedBeadCode = ref('');
 
-const palette = computed(() => getPaletteColors(store.selectedBrand))
-
-function onBrandChange(e: Event) {
-  store.selectedBrand = (e.target as HTMLSelectElement).value
-  store.manualOverrides.clear()
-  selectedPixel.value = null
-}
+const palette = computed(() => getPaletteColors());
 
 function selectBeadColor(code: string) {
   if (selectedPixel.value) {
-    store.overrideColor(selectedPixel.value.x, selectedPixel.value.y, code)
-    selectedBeadCode.value = code
+    store.overrideColor(selectedPixel.value.x, selectedPixel.value.y, code);
+    selectedBeadCode.value = code;
   }
 }
 
 function drawAdjustCanvas() {
-  const canvas = adjustCanvas.value
-  if (!canvas || store.matchedGrid.length === 0) return
+  const canvas = adjustCanvas.value;
+  if (!canvas || store.matchedGrid.length === 0) return;
 
-  const grid = store.matchedGrid
-  const h = grid.length
-  const w = grid[0].length
-  const cellSize = Math.max(4, Math.min(20, Math.floor(480 / Math.max(w, h))))
+  const grid = store.matchedGrid;
+  const h = grid.length;
+  const w = grid[0].length;
+  const cellSize = Math.max(4, Math.min(20, Math.floor(480 / Math.max(w, h))));
 
-  canvas.width = w * cellSize
-  canvas.height = h * cellSize
-  const ctx = canvas.getContext('2d')!
+  canvas.width = w * cellSize;
+  canvas.height = h * cellSize;
+  const ctx = canvas.getContext('2d')!;
 
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      ctx.fillStyle = grid[y][x].beadHex
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
-      ctx.strokeStyle = 'rgba(255,255,255,0.3)'
-      ctx.lineWidth = 0.5
-      ctx.strokeRect(x * cellSize + 0.5, y * cellSize + 0.5, cellSize - 1, cellSize - 1)
+      ctx.fillStyle = grid[y][x].beadHex;
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 0.5;
+      ctx.strokeRect(
+        x * cellSize + 0.5,
+        y * cellSize + 0.5,
+        cellSize - 1,
+        cellSize - 1
+      );
     }
   }
 }
 
 function drawMatchPreview() {
-  const canvas = matchCanvas.value
-  if (!canvas || store.matchedGrid.length === 0) return
+  const canvas = matchCanvas.value;
+  if (!canvas || store.matchedGrid.length === 0) return;
 
-  const grid = store.matchedGrid
-  const h = grid.length
-  const w = grid[0].length
-  const cellSize = Math.max(2, Math.min(8, Math.floor(300 / Math.max(w, h))))
+  const grid = store.matchedGrid;
+  const h = grid.length;
+  const w = grid[0].length;
+  const cellSize = Math.max(2, Math.min(8, Math.floor(300 / Math.max(w, h))));
 
-  canvas.width = w * cellSize
-  canvas.height = h * cellSize
-  const ctx = canvas.getContext('2d')!
+  canvas.width = w * cellSize;
+  canvas.height = h * cellSize;
+  const ctx = canvas.getContext('2d')!;
 
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      ctx.fillStyle = grid[y][x].beadHex
-      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize)
+      ctx.fillStyle = grid[y][x].beadHex;
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
     }
   }
 }
 
 function handleCanvasClick(e: MouseEvent) {
-  const canvas = adjustCanvas.value
-  if (!canvas || store.matchedGrid.length === 0) return
+  const canvas = adjustCanvas.value;
+  if (!canvas || store.matchedGrid.length === 0) return;
 
-  const rect = canvas.getBoundingClientRect()
-  const cellSize = canvas.width / store.matchedGrid[0].length
-  const x = Math.floor((e.clientX - rect.left) / cellSize)
-  const y = Math.floor((e.clientY - rect.top) / cellSize)
+  const rect = canvas.getBoundingClientRect();
+  const cellSize = canvas.width / store.matchedGrid[0].length;
+  const x = Math.floor((e.clientX - rect.left) / cellSize);
+  const y = Math.floor((e.clientY - rect.top) / cellSize);
 
-  if (x >= 0 && x < store.matchedGrid[0].length && y >= 0 && y < store.matchedGrid.length) {
-    selectedPixel.value = { x, y }
-    selectedBeadCode.value = store.matchedGrid[y][x].beadCode
+  if (
+    x >= 0 &&
+    x < store.matchedGrid[0].length &&
+    y >= 0 &&
+    y < store.matchedGrid.length
+  ) {
+    selectedPixel.value = { x, y };
+    selectedBeadCode.value = store.matchedGrid[y][x].beadCode;
   }
 }
 
-watch(() => store.matchedGrid, () => {
-  nextTick(() => {
-    drawAdjustCanvas()
-    drawMatchPreview()
-  })
-}, { deep: true })
+watch(
+  () => store.matchedGrid,
+  () => {
+    nextTick(() => {
+      drawAdjustCanvas();
+      drawMatchPreview();
+    });
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
-h3 { margin-bottom: 4px; }
-.desc { color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; }
+h3 {
+  margin-bottom: 4px;
+}
+.desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
 
 .brand-select {
   margin-bottom: 16px;
 }
 
-.preview-section, .match-preview {
+.preview-section,
+.match-preview {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 
-.preview-section h4, .match-preview h4 {
+.preview-section h4,
+.match-preview h4 {
   font-size: 14px;
   margin-bottom: 8px;
 }
@@ -277,12 +286,14 @@ h3 { margin-bottom: 4px; }
 
 .color-swatch.selected {
   border-color: #000;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #000;
 }
 
 .swatch-label {
   font-size: 8px;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   color: #fff;
   padding: 1px 3px;
   border-radius: 2px;

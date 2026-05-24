@@ -21,7 +21,7 @@
           <h3>上传图片</h3>
           <p>拖拽图片到此处，或点击选择文件</p>
           <p class="upload-hint">支持 JPG、PNG、WebP、BMP 格式</p>
-          <button class="btn btn-primary" @click="$refs.fileInput.click()">
+          <button class="btn btn-primary" @click="fileInput?.click()">
             选择图片
           </button>
         </div>
@@ -31,7 +31,10 @@
         <div class="image-preview">
           <img :src="previewUrl" alt="预览" />
           <div class="preview-actions">
-            <button class="btn btn-secondary btn-sm" @click="$refs.fileInput.click()">
+            <button
+              class="btn btn-secondary btn-sm"
+              @click="fileInput?.click()"
+            >
               更换图片
             </button>
             <button class="btn btn-primary btn-sm" @click="$emit('confirm')">
@@ -45,44 +48,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { loadImage, imageToBase64 } from '@/utils/image'
+import { ref } from 'vue';
+import { loadImage, imageToBase64 } from '@/utils/image';
 
 const emit = defineEmits<{
-  (e: 'image-ready', img: HTMLImageElement, dataUrl: string): void
-  (e: 'confirm'): void
-}>()
+  (e: 'image-ready', img: HTMLImageElement, dataUrl: string): void;
+  (e: 'confirm'): void;
+}>();
 
-const fileInput = ref<HTMLInputElement>()
-const isDragging = ref(false)
-const previewUrl = ref('')
-const currentImage = ref<HTMLImageElement | null>(null)
+const fileInput = ref<HTMLInputElement>();
+const isDragging = ref(false);
+const previewUrl = ref('');
+const currentImage = ref<HTMLImageElement | null>(null);
 
 async function processFile(file: File) {
   if (!file.type.startsWith('image/')) {
-    alert('请选择图片文件')
-    return
+    alert('请选择图片文件');
+    return;
   }
 
   try {
-    const img = await loadImage(file)
-    currentImage.value = img
-    previewUrl.value = URL.createObjectURL(file)
-    emit('image-ready', img, imageToBase64(img))
+    const img = await loadImage(file);
+    currentImage.value = img;
+    previewUrl.value = URL.createObjectURL(file);
+    emit('image-ready', img, imageToBase64(img));
   } catch {
-    alert('图片加载失败，请重试')
+    alert('图片加载失败，请重试');
   }
 }
 
 function handleFileSelect(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (file) processFile(file)
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (file) processFile(file);
 }
 
 function handleDrop(e: DragEvent) {
-  isDragging.value = false
-  const file = e.dataTransfer?.files?.[0]
-  if (file) processFile(file)
+  isDragging.value = false;
+  const file = e.dataTransfer?.files?.[0];
+  if (file) processFile(file);
 }
 </script>
 

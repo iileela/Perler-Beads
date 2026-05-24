@@ -8,7 +8,9 @@
         <div class="icon">📂</div>
         <h3>暂无历史项目</h3>
         <p>完成图纸生成后可保存项目，方便日后查看和编辑</p>
-        <router-link to="/workbench" class="btn btn-primary">去创建工作台</router-link>
+        <router-link to="/workbench" class="btn btn-primary"
+          >去创建工作台</router-link
+        >
       </div>
 
       <div v-else class="project-grid">
@@ -29,15 +31,20 @@
             <h4>{{ project.name }}</h4>
             <p class="project-meta">
               {{ project.pixelWidth }}x{{ project.pixelHeight }}
-              · {{ getBrandName(project.selectedPalette) }}
             </p>
             <p class="project-date">{{ formatDate(project.createdAt) }}</p>
           </div>
           <div class="project-actions">
-            <button class="btn btn-primary btn-sm" @click="loadProject(project)">
+            <button
+              class="btn btn-primary btn-sm"
+              @click="loadProject(project)"
+            >
               打开
             </button>
-            <button class="btn btn-danger btn-sm" @click="confirmDelete(project.id)">
+            <button
+              class="btn btn-danger btn-sm"
+              @click="confirmDelete(project.id)"
+            >
               删除
             </button>
           </div>
@@ -48,30 +55,25 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from '@/stores/project'
-import { useRouter } from 'vue-router'
-import { brandPalettes } from '@/data/palettes'
-import type { ProjectData } from '@/types'
+import { useProjectStore } from '@/stores/project';
+import { useRouter } from 'vue-router';
+import type { ProjectData } from '@/types';
 
-const store = useProjectStore()
-const router = useRouter()
-
-function getBrandName(key: string): string {
-  return brandPalettes[key]?.name ?? key
-}
+const store = useProjectStore();
+const router = useRouter();
 
 function formatDate(ts: number): string {
-  return new Date(ts).toLocaleString('zh-CN')
+  return new Date(ts).toLocaleString('zh-CN');
 }
 
 function loadProject(project: ProjectData) {
-  store.loadProject(project)
-  router.push('/workbench')
+  store.loadProject(project);
+  router.push('/workbench');
 }
 
 function confirmDelete(id: string) {
   if (confirm('确定要删除这个项目吗？')) {
-    store.deleteProject(id)
+    store.deleteProject(id);
   }
 }
 </script>

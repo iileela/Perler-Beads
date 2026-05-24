@@ -3,16 +3,40 @@
     <div class="container">
       <!-- 步骤指示器 -->
       <div class="stepper">
-        <div class="step" :class="{ active: store.currentStep === 1, completed: store.currentStep > 1 }">
-          <span class="step-number">{{ store.currentStep > 1 ? '✓' : '1' }}</span>
+        <div
+          class="step"
+          :class="{
+            active: store.currentStep === 1,
+            completed: store.currentStep > 1
+          }"
+        >
+          <span class="step-number">{{
+            store.currentStep > 1 ? '✓' : '1'
+          }}</span>
           上传图片
         </div>
-        <div class="step" :class="{ active: store.currentStep === 2, completed: store.currentStep > 2 }">
-          <span class="step-number">{{ store.currentStep > 2 ? '✓' : '2' }}</span>
+        <div
+          class="step"
+          :class="{
+            active: store.currentStep === 2,
+            completed: store.currentStep > 2
+          }"
+        >
+          <span class="step-number">{{
+            store.currentStep > 2 ? '✓' : '2'
+          }}</span>
           像素化处理
         </div>
-        <div class="step" :class="{ active: store.currentStep === 3, completed: store.currentStep > 3 }">
-          <span class="step-number">{{ store.currentStep > 3 ? '✓' : '3' }}</span>
+        <div
+          class="step"
+          :class="{
+            active: store.currentStep === 3,
+            completed: store.currentStep > 3
+          }"
+        >
+          <span class="step-number">{{
+            store.currentStep > 3 ? '✓' : '3'
+          }}</span>
           色盘匹配
         </div>
         <div class="step" :class="{ active: store.currentStep === 4 }">
@@ -23,10 +47,7 @@
 
       <!-- 步骤1: 上传图片 -->
       <section v-if="store.currentStep === 1" class="step-content">
-        <ImageUploader
-          @image-ready="onImageReady"
-          @confirm="onImageConfirm"
-        />
+        <ImageUploader @image-ready="onImageReady" @confirm="onImageConfirm" />
       </section>
 
       <!-- 步骤2: 像素化处理 -->
@@ -38,7 +59,11 @@
           <div class="col-main">
             <div v-if="store.originalDataUrl" class="preview-card card">
               <h4>原始图片预览</h4>
-              <img :src="store.originalDataUrl" alt="原始图片" class="orig-preview" />
+              <img
+                :src="store.originalDataUrl"
+                alt="原始图片"
+                class="orig-preview"
+              />
             </div>
           </div>
         </div>
@@ -67,7 +92,7 @@
 
       <!-- 步骤4: 导出图纸 -->
       <section v-if="store.currentStep === 4" class="step-content">
-        <div class="two-col">
+        <div class="two-col two-col-export">
           <div class="col-main">
             <PatternPreview />
           </div>
@@ -96,21 +121,21 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectStore } from '@/stores/project'
-import ImageUploader from '@/components/ImageUploader.vue'
-import PixelationControls from '@/components/PixelationControls.vue'
-import PaletteMatcher from '@/components/PaletteMatcher.vue'
-import PatternPreview from '@/components/PatternPreview.vue'
-import MaterialList from '@/components/MaterialList.vue'
+import { useProjectStore } from '@/stores/project';
+import ImageUploader from '@/components/ImageUploader.vue';
+import PixelationControls from '@/components/PixelationControls.vue';
+import PaletteMatcher from '@/components/PaletteMatcher.vue';
+import PatternPreview from '@/components/PatternPreview.vue';
+import MaterialList from '@/components/MaterialList.vue';
 
-const store = useProjectStore()
+const store = useProjectStore();
 
 function onImageReady(img: HTMLImageElement, dataUrl: string) {
-  store.setOriginalImage(img, dataUrl)
+  store.setOriginalImage(img, dataUrl);
 }
 
 function onImageConfirm() {
-  store.currentStep = 2
+  store.currentStep = 2;
 }
 </script>
 
@@ -133,6 +158,10 @@ function onImageConfirm() {
   grid-template-columns: 360px 1fr;
   gap: 24px;
   align-items: start;
+}
+
+.two-col-export {
+  grid-template-columns: 2fr 1fr;
 }
 
 .col-sidebar {
@@ -162,7 +191,7 @@ function onImageConfirm() {
 .global-loading {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -184,7 +213,8 @@ function onImageConfirm() {
 }
 
 @media (max-width: 768px) {
-  .two-col {
+  .two-col,
+  .two-col-export {
     grid-template-columns: 1fr;
   }
 
